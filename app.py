@@ -197,7 +197,7 @@ if auth_status:
     # ----------------------------
     # ADMIN TOOLS
     # ----------------------------
-    if auth_status and username in ADMINS:
+    if username in ADMINS:
 
         with st.expander("🛠 Admin: Set Game Winners"):
             cursor.execute("SELECT game_id, week, home, away, winner FROM games")
