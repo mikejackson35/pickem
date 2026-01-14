@@ -459,7 +459,7 @@ if auth_status:
                     df,
                     width="stretch",
                     hide_index=True,
-                    row_height=40,
+                    row_height=50,
                     column_config=column_config
                 )
 
