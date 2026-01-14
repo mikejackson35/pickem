@@ -355,7 +355,7 @@ if auth_status:
                     [r for r in ROUND_ORDER if r in {g["week"] for g in games}]
                 )
 
-                week_games = [g for g in GAMES if g["week"] == week]
+                week_games = [g for g in games if g["week"] == week]
                 game_ids = [g["game_id"] for g in week_games]
 
                 if not game_ids:
