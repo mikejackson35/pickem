@@ -242,7 +242,7 @@ if auth_status:
     if username in ADMINS:
 
         with st.sidebar.expander("🛠 Admin: Set Game Winners"):
-            cursor.execute("SELECT game_id, week, home, away, FROM games")
+            cursor.execute("SELECT game_id, week, home, away, winner FROM games")
             games = cursor.fetchall()
 
             if not games:
