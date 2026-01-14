@@ -372,14 +372,14 @@ if auth_status:
 
     elif page == "All Picks":
             st.title("📊 All Picks")
-            st.sidebar.divider()
+            st.divider()
 
             # Get available rounds from database
             cursor.execute("SELECT DISTINCT week FROM games")
             available_weeks = [row["week"] for row in cursor.fetchall()]
 
             # Sidebar round selector
-            week = st.sidebar.selectbox(
+            week = st.selectbox(
                 "Select Round",
                 [r for r in ROUND_ORDER if r in available_weeks]
             )
