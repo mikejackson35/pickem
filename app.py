@@ -298,7 +298,7 @@ if auth_status:
     # PAGE NAVIGATION
     PAGES = ["Leaderboard", "All Picks", "Make Picks"]
     page = st.sidebar.radio("Go to", PAGES)
-    st.sidebar.divider()
+    # st.sidebar.divider()
 
 
     if page == "Make Picks":
