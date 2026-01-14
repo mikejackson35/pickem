@@ -39,13 +39,31 @@ cursor = conn.cursor()
 ADMINS = {"mj"}  # set of usernames allowed to see admin tools
 
 # ----------------------------
-# ROUND ORDER
+# CONSTANTS
 # ----------------------------
 ROUND_ORDER = [
     "Wild Card",
     "Divisional",
     "Conference",
     "Superbowl"
+]
+
+from datetime import datetime, timezone
+
+GAMES = [
+    {"game_id": "LAR @ CAR", "week": "Wild Card", "home": "Panthers", "away": "Rams", "kickoff": datetime(2026, 1, 14, 18, 20, tzinfo=timezone.utc)},
+    {"game_id": "CHI @ GB", "week": "Wild Card", "home": "Bears", "away": "Packers", "kickoff": datetime(2026, 1, 14, 18, 20, tzinfo=timezone.utc)},
+    {"game_id": "JAX @ BUF", "week": "Wild Card", "home": "Jaguars", "away": "Bills", "kickoff": datetime(2026, 1, 14, 18, 20, tzinfo=timezone.utc)},
+    {"game_id": "PHI @ SF", "week": "Wild Card", "home": "Eagles", "away": "49ers", "kickoff": datetime(2026, 1, 14, 18, 20, tzinfo=timezone.utc)},
+    {"game_id": "NE @ LAC", "week": "Wild Card", "home": "Patriots", "away": "Chargers", "kickoff": datetime(2026, 1, 14, 18, 20, tzinfo=timezone.utc)},
+    {"game_id": "PIT @ HOU", "week": "Wild Card", "home": "Steelers", "away": "Texans", "kickoff": datetime(2026, 1, 14, 18, 20, tzinfo=timezone.utc)},
+    {"game_id": "Div1", "week": "Divisional", "home": "Team A", "away": "Team B", "kickoff": datetime(2026, 1, 17, 22, 0, tzinfo=timezone.utc)},
+    {"game_id": "Div2", "week": "Divisional", "home": "Team C", "away": "Team D", "kickoff": datetime(2026, 1, 17, 15, 0, tzinfo=timezone.utc)},
+    {"game_id": "Div3", "week": "Divisional", "home": "Team E", "away": "Team F", "kickoff": datetime(2026, 1, 18, 19, 30, tzinfo=timezone.utc)},
+    {"game_id": "Div4", "week": "Divisional", "home": "Team G", "away": "Team H", "kickoff": datetime(2026, 1, 18, 22, 0, tzinfo=timezone.utc)},
+    {"game_id": "Con1", "week": "Conference", "home": "Team A", "away": "Team B", "kickoff": datetime(2026, 1, 25, 19, 30, tzinfo=timezone.utc)},
+    {"game_id": "Con2", "week": "Conference", "home": "Team C", "away": "Team D", "kickoff": datetime(2026, 1, 25, 22, 0, tzinfo=timezone.utc)},
+    {"game_id": "SB", "week": "Superbowl", "home": "Team A", "away": "Team B", "kickoff": datetime(2026, 2, 1, 15, 0, tzinfo=timezone.utc)}
 ]
 
 
