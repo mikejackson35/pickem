@@ -12,8 +12,8 @@ import re
 
 # Hide Streamlit menu and footer
 st.set_page_config(
-    page_title="NFL Pickem",
-    layout="wide",
+    page_title="Pick'em",
+    layout="centered",
     initial_sidebar_state="expanded",
     menu_items={
         'Get Help': None,
