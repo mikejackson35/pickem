@@ -445,7 +445,7 @@ if auth_status:
                 df = pd.DataFrame(table)
                 
                 column_config = {
-                    "User": st.column_config.TextColumn("User", width="medium")
+                    "User": st.column_config.TextColumn("User", width="content")
                 }
                 
                 # Configure each game column to show images
