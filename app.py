@@ -267,7 +267,7 @@ if auth_status:
 
                 # Filter ROUND_ORDER to only show rounds that exist in DB
                 week = st.selectbox(
-                    "Select Round",
+                    "",
                     [r for r in ROUND_ORDER if r in available_weeks]
                 )
 
