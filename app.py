@@ -355,14 +355,20 @@ if auth_status:
     elif page == "All Picks":
             st.title("📊 All Picks")
             st.sidebar.divider()
+            
+            # Get available rounds from database
+            cursor.execute("SELECT DISTINCT week FROM games")
+            available_weeks = [row["week"] for row in cursor.fetchall()]
 
-            # Sidebar round selector
+            # Filter ROUND_ORDER to only show rounds that exist in DB
             week = st.sidebar.selectbox(
                 "Select Round",
-                [r for r in ROUND_ORDER if r in {g["week"] for g in GAMES}]
+                [r for r in ROUND_ORDER if r in available_weeks]
             )
 
-            week_games = [g for g in GAMES if g["week"] == week]
+            # Get games from database for selected round
+            cursor.execute("SELECT game_id, week, home, away, kickoff FROM games WHERE week=%s", (week,))
+            week_games = cursor.fetchall()
             game_ids = [g["game_id"] for g in week_games]
 
             if not game_ids:
