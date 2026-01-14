@@ -10,6 +10,15 @@ from utils import TEAM_ABBR, TEAM_ALIAS
 import os
 import re
 
+# Hide dataframe toolbar
+st.markdown("""
+    <style>
+    [data-testid="stElementToolbar"] {
+        display: none;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 
 # ----------------------------
 # Database Connection
