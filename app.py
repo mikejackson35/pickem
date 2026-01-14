@@ -464,7 +464,7 @@ if auth_status:
                 )
 
     elif page == "Leaderboard":
-        st.title("🏆 Leaderboard")
+        st.title("Leaderboard")
         st.sidebar.divider()
 
         # 1️⃣ Get all users (username + full name)
@@ -507,7 +507,7 @@ if auth_status:
         import pandas as pd
 
         df = pd.DataFrame({
-            "User": [name_map.get(u, u) for u in usernames],
+            "Player": [name_map.get(u, u) for u in usernames],
             "Points": [user_points[u] for u in usernames]
         })
 
