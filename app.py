@@ -255,19 +255,21 @@ if auth_status:
 
 
     if page == "Make Picks":
-            st.write(f"Hello **{name}**!")
-            st.title("Make Picks Here")
-            st.sidebar.divider()
+            
+            col1, col2 = st.columns([4,1])
+            with col1:
+                st.title("📝 Make Your Picks")
+            with col2:
 
-            # Get available rounds from database
-            cursor.execute("SELECT DISTINCT week FROM games ORDER BY week")
-            available_weeks = [row["week"] for row in cursor.fetchall()]
+                # Get available rounds from database
+                cursor.execute("SELECT DISTINCT week FROM games ORDER BY week")
+                available_weeks = [row["week"] for row in cursor.fetchall()]
 
-            # Filter ROUND_ORDER to only show rounds that exist in DB
-            week = st.selectbox(
-                "Select Round",
-                [r for r in ROUND_ORDER if r in available_weeks]
-            )
+                # Filter ROUND_ORDER to only show rounds that exist in DB
+                week = st.selectbox(
+                    "Select Round",
+                    [r for r in ROUND_ORDER if r in available_weeks]
+                )
 
             # Fix deprecated datetime
             from datetime import timezone
