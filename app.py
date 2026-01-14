@@ -153,12 +153,6 @@ if not auth_status:
 if auth_status:
     with st.sidebar:
         st.success(f"Logged in as {name}")
-#         if st.button("Logout"):
-#             st.session_state["authentication_status"] = None
-#             st.session_state["username"] = None
-#             st.session_state["name"] = None
-#             st.rerun()
-
 
 # ----------------------------
 # APP
@@ -199,7 +193,7 @@ if auth_status:
     # ----------------------------
     if username in ADMINS:
 
-        with st.expander("🛠 Admin: Set Game Winners"):
+        with st.sidebar.expander("🛠 Admin: Set Game Winners"):
             cursor.execute("SELECT game_id, week, home, away, winner FROM games")
             games = cursor.fetchall()
 
