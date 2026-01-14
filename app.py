@@ -38,6 +38,16 @@ cursor = conn.cursor()
 # ----------------------------
 ADMINS = {"mj"}  # set of usernames allowed to see admin tools
 
+# ----------------------------
+# ROUND ORDER
+# ----------------------------
+ROUND_ORDER = [
+    "Wild Card",
+    "Divisional",
+    "Conference",
+    "Superbowl"
+]
+
 
 # ----------------------------
 # HELPER FUNCTIONS
@@ -189,83 +199,58 @@ if auth_status:
     # ----------------------------
     if auth_status and username in ADMINS:
 
-        with st.sidebar.expander("🛠 Admin: Set Tier Winners"):
+        with st.expander("🛠 Admin: Set Game Winners"):
+            cursor.execute("SELECT game_id, week, home, away, winner FROM games")
+            games = cursor.fetchall()
 
-            # Select tournament
-            cursor.execute("""
-                SELECT tournament_id, name
-                FROM tournaments
-                ORDER BY start_time
-            """)
-            tournaments = cursor.fetchall()
-
-            if not tournaments:
-                st.info("No tournaments found")
+            if not games:
+                st.info("No games found in database")
             else:
-                tournament_map = {t["name"]: t["tournament_id"] for t in tournaments}
-                selected_name = st.selectbox("Tournament", list(tournament_map.keys()))
-                tournament_id = tournament_map[selected_name]
+                # Sort games by round order
+                games_sorted = sorted(games, key=lambda g: ROUND_ORDER.index(g["week"]))
+                
+                for idx, game in enumerate(games_sorted):
+                    game_id = game["game_id"]
+                    week = game["week"]
+                    home = game["home"]
+                    away = game["away"]
+                    winner = game["winner"]
+                    
+                    # Show round header
+                    if idx == 0 or games_sorted[idx-1]["week"] != week:
+                        st.subheader(week)
+                    
+                    col1, col2 = st.columns([3, 1])
+                    
+                    with col1:
+                        # Strip whitespace and handle None
+                        winner_clean = winner.strip() if winner else None
+                        home_clean = home.strip()
+                        away_clean = away.strip()
+                        
+                        # Safely determine index
+                        options = ["", home_clean, away_clean]
+                        try:
+                            current_index = options.index(winner_clean) if winner_clean else 0
+                        except ValueError:
+                            current_index = 0
+                        
+                        choice = st.selectbox(
+                            f"{away_clean} @ {home_clean}",
+                            options,
+                            index=current_index,
+                            key=f"winner_{idx}"
+                        )
 
-                # For each tier
-                for tier_number in range(1, 6):
-
-                    st.markdown(f"**Tier {tier_number} Winner**")
-
-                    # Players in this tier
-                    cursor.execute("""
-                        SELECT p.player_id, p.name
-                        FROM tiers t
-                        JOIN players p ON p.player_id = t.player_id
-                        WHERE t.tournament_id = %s
-                        AND t.tier_number = %s
-                    """, (tournament_id, tier_number))
-                    players = cursor.fetchall()
-
-                    if not players:
-                        st.info("No players assigned to this tier")
-                        continue
-
-                    player_options = {p["name"]: p["player_id"] for p in players}
-
-                    # Existing result
-                    cursor.execute("""
-                        SELECT winning_player_id
-                        FROM results
-                        WHERE tournament_id=%s AND tier_number=%s
-                    """, (tournament_id, tier_number))
-                    existing = cursor.fetchone()
-
-                    existing_name = None
-                    if existing:
-                        for name, pid in player_options.items():
-                            if pid == existing["winning_player_id"]:
-                                existing_name = name
-
-                    choice = st.selectbox(
-                        f"Winner (Tier {tier_number})",
-                        [""] + list(player_options.keys()),
-                        index=(list(player_options.keys()).index(existing_name) + 1)
-                        if existing_name else 0,
-                        key=f"tier_win_{tournament_id}_{tier_number}"
-                    )
-
-                    if st.button("Save", key=f"save_{tournament_id}_{tier_number}"):
-                        cursor.execute("""
-                            INSERT INTO results (tournament_id, tier_number, winning_player_id)
-                            VALUES (%s, %s, %s)
-                            ON CONFLICT (tournament_id, tier_number)
-                            DO UPDATE SET winning_player_id=EXCLUDED.winning_player_id
-                        """, (
-                            tournament_id,
-                            tier_number,
-                            player_options.get(choice)
-                        ))
-                        conn.commit()
-                        st.success("Saved")
-                        st.rerun()
-
-
-
+                    with col2:
+                        if st.button("Save", key=f"save_{idx}"):
+                            cursor.execute(
+                                "UPDATE games SET winner=%s WHERE game_id=%s",
+                                (choice if choice else None, game_id)
+                            )
+                            conn.commit()
+                            st.success("Saved!")
+                            st.rerun()
 
     st.sidebar.divider()
 
