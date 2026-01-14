@@ -371,86 +371,94 @@ if auth_status:
 
 
     elif page == "All Picks":
-                st.title("📊 Weekly Picks Grid")
-                st.sidebar.divider()
+            st.title("📊 All Picks")
+            st.sidebar.divider()
 
-                # Sidebar round selector
-                week = st.sidebar.selectbox(
-                    "Select Round",
-                    [r for r in ROUND_ORDER if r in {g["week"] for g in games}]
+            # Get available rounds from database
+            cursor.execute("SELECT DISTINCT week FROM games")
+            available_weeks = [row["week"] for row in cursor.fetchall()]
+
+            # Sidebar round selector
+            week = st.sidebar.selectbox(
+                "Select Round",
+                [r for r in ROUND_ORDER if r in available_weeks]
+            )
+
+            # Get games from database for selected round
+            cursor.execute("SELECT game_id, week, home, away FROM games WHERE week=%s", (week,))
+            week_games = cursor.fetchall()
+            game_ids = [g["game_id"] for g in week_games]
+
+            if not game_ids:
+                st.info("No games for this round.")
+            else:
+                # 1️⃣ Get all users and their full names
+                cursor.execute("SELECT username, name FROM users")
+                users = cursor.fetchall()  # list of dicts
+                usernames = [u["username"] for u in users]
+                name_map = {u["username"]: u["name"] for u in users}
+
+                # 2️⃣ Get picks for these games
+                placeholders = ",".join(["%s"] * len(game_ids))
+                cursor.execute(
+                    f"""
+                    SELECT username, game_id, pick
+                    FROM picks
+                    WHERE game_id IN ({placeholders})
+                    """,
+                    tuple(game_ids)  # Pass as tuple, not list
                 )
+                rows = cursor.fetchall()
 
-                week_games = [g for g in games if g["week"] == week]
-                game_ids = [g["game_id"] for g in week_games]
+                # 3️⃣ Build lookup: username -> game_id -> pick
+                pick_map = {u: {gid: None for gid in game_ids} for u in usernames}
+                for row in rows:
+                    pick_map[row["username"]][row["game_id"]] = row["pick"]
 
-                if not game_ids:
-                    st.info("No games for this round.")
-                else:
-                    # 1️⃣ Get all users and their full names
-                    cursor.execute("SELECT username, name FROM users")
-                    users = cursor.fetchall()  # list of dicts
-                    usernames = [u["username"] for u in users]
-                    name_map = {u["username"]: u["name"] for u in users}
+                # 4️⃣ Build display table with lock logic
+                from datetime import timezone
+                now = datetime.now(timezone.utc)
+                table = []
+                for user in users:
+                    username = user["username"]
+                    full_name = user["name"]
+                    row_data = {"User": full_name}  # display full name
 
-                    # 2️⃣ Get picks for these games
-                    placeholders = ",".join(["%s"] * len(game_ids))
-                    cursor.execute(
-                        f"""
-                        SELECT username, game_id, pick
-                        FROM picks
-                        WHERE game_id IN ({placeholders})
-                        """,
-                        tuple(game_ids)  # Pass as tuple, not list
-                    )
-                    rows = cursor.fetchall()
-
-                    # 3️⃣ Build lookup: username -> game_id -> pick
-                    pick_map = {u: {gid: None for gid in game_ids} for u in usernames}
-                    for row in rows:
-                        pick_map[row["username"]][row["game_id"]] = row["pick"]
-
-                    # 4️⃣ Build display table with lock logic
-                    from datetime import timezone
-                    now = datetime.now(timezone.utc)
-                    table = []
-                    for user in users:
-                        username = user["username"]
-                        full_name = user["name"]
-                        row_data = {"User": full_name}  # display full name
-
-                        for g in week_games:
-                            locked = now >= g["kickoff"]
-
-                            if locked:
-                                pick = pick_map[username][g["game_id"]]
-                                # Request 200px, but Patriots/Jaguars will auto-use 500px
-                                row_data[g["game_id"]] = nfl_logo_url(pick, 200) if pick else "—"
-                            else:
-                                row_data[g["game_id"]] = "🔒"
-
-                        table.append(row_data)
-
-                    # 5️⃣ Create column config to render images
-                    import pandas as pd
-                    df = pd.DataFrame(table)
-                    
-                    column_config = {
-                        "User": st.column_config.TextColumn("User", width="medium")
-                    }
-                    
-                    # Configure each game column to show images
                     for g in week_games:
-                        column_config[g["game_id"]] = st.column_config.ImageColumn(
-                            g["game_id"],
-                            width=80  # Use fixed pixel width for sharper logos
-                        )
-                    
-                    st.dataframe(
-                        df,
-                        width="stretch",
-                        hide_index=True,
-                        column_config=column_config
+                        # Use helper function to get kickoff datetime
+                        kickoff = get_game_kickoff(g["game_id"])
+                        locked = now >= kickoff if kickoff else False
+
+                        if locked:
+                            pick = pick_map[username][g["game_id"]]
+                            # Request 200px, but Patriots/Jaguars will auto-use 500px
+                            row_data[g["game_id"]] = nfl_logo_url(pick, 200) if pick else "—"
+                        else:
+                            row_data[g["game_id"]] = "🔒"
+
+                    table.append(row_data)
+
+                # 5️⃣ Create column config to render images
+                import pandas as pd
+                df = pd.DataFrame(table)
+                
+                column_config = {
+                    "User": st.column_config.TextColumn("User", width="medium")
+                }
+                
+                # Configure each game column to show images
+                for g in week_games:
+                    column_config[g["game_id"]] = st.column_config.ImageColumn(
+                        g["game_id"],
+                        width=70  # Use fixed pixel width for sharper logos
                     )
+                
+                st.dataframe(
+                    df,
+                    width="stretch",
+                    hide_index=True,
+                    column_config=column_config
+                )
 
     elif page == "Leaderboard":
         st.title("🏆 Leaderboard")
