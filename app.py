@@ -10,6 +10,29 @@ from utils import TEAM_ABBR, TEAM_ALIAS
 import os
 import re
 
+# Hide Streamlit menu and footer
+st.set_page_config(
+    page_title="NFL Pickem",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': None,
+        'Report a bug': None,
+        'About': None
+    }
+)
+
+st.markdown("""
+    <style>
+    [data-testid="stElementToolbar"] {
+        display: none;
+    }
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+    """, unsafe_allow_html=True)
+
 # Hide dataframe toolbar
 st.markdown("""
     <style>
