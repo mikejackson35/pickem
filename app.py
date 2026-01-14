@@ -13,7 +13,7 @@ import re
 # Hide Streamlit menu and footer
 st.set_page_config(
     page_title="Pick'em",
-    layout="centered",
+    layout="centered",  # Changed from "centered" to "wide"
     initial_sidebar_state="expanded",
     menu_items={
         'Get Help': None,
@@ -22,6 +22,7 @@ st.set_page_config(
     }
 )
 
+# Hide menus and toolbars
 st.markdown("""
     <style>
     [data-testid="stElementToolbar"] {
@@ -29,16 +30,6 @@ st.markdown("""
     }
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    header {visibility: hidden;}
-    </style>
-    """, unsafe_allow_html=True)
-
-# Hide dataframe toolbar
-st.markdown("""
-    <style>
-    [data-testid="stElementToolbar"] {
-        display: none;
-    }
     </style>
     """, unsafe_allow_html=True)
 
