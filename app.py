@@ -300,6 +300,7 @@ if auth_status:
     # PAGE NAVIGATION
     PAGES = ["Leaderboard", "All Picks", "Make Picks"]
     page = st.sidebar.radio("Go to", PAGES)
+    st.sidebar.divider()
 
 
     if page == "Make Picks":
@@ -371,18 +372,21 @@ if auth_status:
 
 
     elif page == "All Picks":
-            st.title("📊 All Picks")
-            st.divider()
+            
+            col1, col2 = st.columns([3.5,1.5])
+            with col1:
+                st.title("📊 All Picks")
+            with col2:
 
-            # Get available rounds from database
-            cursor.execute("SELECT DISTINCT week FROM games")
-            available_weeks = [row["week"] for row in cursor.fetchall()]
+                # Get available rounds from database
+                cursor.execute("SELECT DISTINCT week FROM games")
+                available_weeks = [row["week"] for row in cursor.fetchall()]
 
-            # Sidebar round selector
-            week = st.selectbox(
-                "Select Round",
-                [r for r in ROUND_ORDER if r in available_weeks]
-            )
+                # Sidebar round selector
+                week = st.selectbox(
+                    "Select Round",
+                    [r for r in ROUND_ORDER if r in available_weeks]
+                )
 
             # Get games from database for selected round
             cursor.execute("SELECT game_id, week, home, away FROM games WHERE week=%s", (week,))
