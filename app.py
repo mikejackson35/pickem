@@ -74,7 +74,7 @@ def nfl_logo_url(team_abbr: str, size: int = 500) -> str:
         return None
     
     # Patriots and Jaguars only available at 500px on ESPN
-    if team_abbr.upper() in ["PATRIOTS", "JAGUARS"]:
+    if team_abbr.upper() in ["PATRIOTS", "JAGUARS", "RAMS"]:
         size = 500
     
     return f"https://a.espncdn.com/i/teamlogos/nfl/{size}/{espn_abbr}.png"
