@@ -336,7 +336,7 @@ if auth_status:
             
             col1, col2 = st.columns([3.5,1.5])
             with col1:
-                st.title("Make Picks Here")
+                st.title("Make Picks")
             with col2:
 
                 # Get available rounds from database
