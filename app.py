@@ -22,7 +22,6 @@ st.set_page_config(
     }
 )
 
-# Hide menus and toolbars
 st.markdown("""
     <style>
     [data-testid="stElementToolbar"] {
@@ -30,6 +29,15 @@ st.markdown("""
     }
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
+    [data-testid="stToolbar"] {
+        display: none;
+    }
+    .stDeployButton {
+        display: none;
+    }
+    [data-testid="stStatusWidget"] {
+        display: none;
+    }
     </style>
     """, unsafe_allow_html=True)
 
