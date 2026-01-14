@@ -352,7 +352,7 @@ if auth_status:
                 # Sidebar round selector
                 week = st.sidebar.selectbox(
                     "Select Round",
-                    [r for r in ROUND_ORDER if r in {g["week"] for g in GAMES}]
+                    [r for r in ROUND_ORDER if r in {g["week"] for g in games}]
                 )
 
                 week_games = [g for g in GAMES if g["week"] == week]
