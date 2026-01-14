@@ -368,6 +368,7 @@ if auth_status:
 
 
     elif page == "All Picks":
+<<<<<<< HEAD
         col1, space, col2 = st.columns([3, .5, 1.5])
         with col1:
             st.title("All Picks")
@@ -381,6 +382,17 @@ if auth_status:
                 tournament_map = {t["name"]: t["tournament_id"] for t in tournaments}
                 selected_name = st.selectbox("Tournament", list(tournament_map.keys()))
                 tournament_id = tournament_map[selected_name]
+=======
+                col1, space, col2 = st.columns([3,.5,1.5])
+                with col1:
+                    st.title("All Picks")
+                with col2:
+                # PICK'EM LOGIC
+                    week = st.selectbox(
+                        "",
+                        [r for r in ROUND_ORDER if r in {g["week"] for g in GAMES}]
+                    )
+>>>>>>> ad537f8 (pudate)
 
         st.sidebar.divider()
         st.write("")
@@ -537,6 +549,3 @@ if auth_status is True:
             st.session_state["username"] = None
             st.session_state["name"] = None
             st.rerun()
-
-
-
