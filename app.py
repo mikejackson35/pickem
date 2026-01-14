@@ -375,7 +375,7 @@ if auth_status:
             
             col1, col2 = st.columns([3.5,1.5])
             with col1:
-                st.title("📊 All Picks")
+                st.title("All Picks")
             with col2:
 
                 # Get available rounds from database
@@ -384,7 +384,7 @@ if auth_status:
 
                 # Sidebar round selector
                 week = st.selectbox(
-                    "Select Round",
+                    "",
                     [r for r in ROUND_ORDER if r in available_weeks]
                 )
 
