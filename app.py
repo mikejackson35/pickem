@@ -243,6 +243,7 @@ if auth_status:
                         )
 
                     with col2:
+                        st.space(size='small')
                         if st.button("Save", key=f"save_{idx}"):
                             cursor.execute(
                                 "UPDATE games SET winner=%s WHERE game_id=%s",
@@ -269,7 +270,7 @@ if auth_status:
             available_weeks = [row["week"] for row in cursor.fetchall()]
 
             # Filter ROUND_ORDER to only show rounds that exist in DB
-            week = st.sidebar.selectbox(
+            week = st.selectbox(
                 "Select Round",
                 [r for r in ROUND_ORDER if r in available_weeks]
             )
@@ -323,15 +324,6 @@ if auth_status:
                         st.info(f"Your pick: **{existing_pick}**")
                     else:
                         st.warning("No pick submitted")
-
-                # # Show all picks after kickoff
-                # if locked:
-                #     cursor.execute("SELECT username, pick FROM picks WHERE game_id=%s", (game["game_id"],))
-                #     all_picks = cursor.fetchall()
-                #     if all_picks:
-                #         import pandas as pd
-                #         df = pd.DataFrame([{"User": p["username"], "Pick": p["pick"]} for p in all_picks])
-                #         st.table(df)
 
 
     elif page == "All Picks":
