@@ -506,10 +506,6 @@ if auth_status:
         # 5️⃣ Build DataFrame with full names
         import pandas as pd
 
-        column_config = {
-            "Player": st.column_config.TextColumn("Player", width="content")
-        }
-
         df = pd.DataFrame({
             "Player": [name_map.get(u, u) for u in usernames],
             "Points": [user_points[u] for u in usernames]
@@ -518,11 +514,16 @@ if auth_status:
         # 6️⃣ Sort by points descending
         df = df.sort_values("Points", ascending=False).reset_index(drop=True)
 
+        column_config = {
+            "Player": st.column_config.TextColumn("Player", width="content")
+        }
+
         # 7️⃣ Display in Streamlit
         st.dataframe(
             df,
             width="stretch",
-            hide_index=True
+            hide_index=True,
+            column_config=column_config
         )
 
 
