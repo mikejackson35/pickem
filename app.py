@@ -456,7 +456,7 @@ if auth_status:
                     )
                 
                 st.dataframe(
-                    df,
+                    df.rename(columns = {'User':'Player'}),
                     width="stretch",
                     hide_index=True,
                     row_height=50,
