@@ -256,9 +256,9 @@ if auth_status:
 
     if page == "Make Picks":
             
-            col1, col2 = st.columns([4,1])
+            col1, col2 = st.columns([3.5,1.5])
             with col1:
-                st.title("📝 Make Your Picks")
+                st.title("Make Picks Here")
             with col2:
 
                 # Get available rounds from database
