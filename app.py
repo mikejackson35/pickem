@@ -98,6 +98,13 @@ def safe_key(s: str) -> str:
     s = s.replace(" ", "_").replace("@", "at")
     return re.sub(r"[^0-9a-zA-Z_]", "", s)
 
+def get_game_kickoff(game_id):
+    """Get kickoff time from GAMES constant"""
+    for g in GAMES:
+        if g["game_id"] == game_id:
+            return g["kickoff"]
+    return None
+
 def add_test_user():
     cursor.execute("SELECT 1 FROM users WHERE username = %s", ("mj",))
     if cursor.fetchone() is None:
@@ -322,35 +329,35 @@ if auth_status:
 
             st.write('')
 
-            for game in week_games:
-                locked = now >= game["kickoff"]
-                matchup = f'{game["away"]} @ {game["home"]}'
+            for g in week_games:
+                locked = now >= g["kickoff"]
+                matchup = f'{g["away"]} @ {g["home"]}'
                 st.subheader(matchup)
-                kickoff_str = game["kickoff"].strftime("%A %I:%M %p").lstrip("0")
+                kickoff_str = g["kickoff"].strftime("%A %I:%M %p").lstrip("0")
                 st.caption(f"{kickoff_str} EST")
 
                 # Get existing pick - fix dictionary access
-                cursor.execute("SELECT pick FROM picks WHERE username=%s AND game_id=%s", (username, game["game_id"]))
+                cursor.execute("SELECT pick FROM picks WHERE username=%s AND game_id=%s", (username, g["game_id"]))
                 existing = cursor.fetchone()
                 existing_pick = existing["pick"] if existing else None
 
                 if not locked:
                     choice = st.radio(
                         "Pick winner",
-                        [game["away"], game["home"]],
-                        index=(0 if existing_pick == game["away"] else 1 if existing_pick == game["home"] else 0),
-                        key=f"pick_{safe_key(game['game_id'])}_{safe_key(username)}"
+                        [g["away"], g["home"]],
+                        index=(0 if existing_pick == g["away"] else 1 if existing_pick == g["home"] else 0),
+                        key=f"pick_{safe_key(g['game_id'])}_{safe_key(username)}"
                     )
                     
-                    if st.button("Save Pick", key=f"save_{safe_key(username)}_{safe_key(game['game_id'])}"):
+                    if st.button("Save Pick", key=f"save_{safe_key(username)}_{safe_key(g['game_id'])}"):
                         # Delete old pick first, then insert new one
                         cursor.execute(
                             "DELETE FROM picks WHERE username=%s AND game_id=%s", 
-                            (username, game["game_id"])
+                            (username, g["game_id"])
                         )
                         cursor.execute(
                             "INSERT INTO picks (username, game_id, pick, timestamp) VALUES (%s, %s, %s, %s)",
-                            (username, game["game_id"], choice, now.isoformat())
+                            (username, g["game_id"], choice, now.isoformat())
                         )
                         conn.commit()
                         st.success(f"Saved pick: {choice}")
