@@ -442,72 +442,58 @@ if auth_status:
         st.title("🏆 Leaderboard")
         st.sidebar.divider()
 
-        # 1️⃣ Get all users
+        # 1️⃣ Get all users (username + full name)
         cursor.execute("SELECT username, name FROM users ORDER BY name")
-        users = cursor.fetchall()
+        users = cursor.fetchall()  # list of dicts
+
+        # Mapping for easy lookup
         name_map = {user["username"]: user["name"] for user in users}
         usernames = [user["username"] for user in users]
 
-        # 2️⃣ Initialize points
+        # 2️⃣ Initialize points to 0 for all users
         user_points = {u: 0 for u in usernames}
 
-        # 3️⃣ Optional: define tier weights (if you want tier 1 to be worth more)
-        TIER_WEIGHTS = {1: 5, 2: 4, 3: 3, 4: 2, 5: 1}  # example, 5 points for tier 1, etc.
+        # 3️⃣ Define round weights
+        ROUND_WEIGHTS = {
+            "Wild Card": 1,
+            "Divisional": 2,
+            "Conference": 3,
+            "Superbowl": 4
+        }
 
         # 4️⃣ Get all picks
-        cursor.execute("""
-            SELECT username, tournament_id, tier_number, player_id
-            FROM picks
-        """)
+        cursor.execute("SELECT username, game_id, pick FROM picks")
         all_picks = cursor.fetchall()
-        # 5️⃣ Compare picks to results
-        for pick in all_picks:
-            username = pick["username"]
-            tournament_id = pick["tournament_id"]
-            tier_number = pick["tier_number"]
-            player_id = pick["player_id"]
 
-            # Get tournament start time
-            cursor.execute("SELECT start_time FROM tournaments WHERE tournament_id=%s", (tournament_id,))
-            tournament_info = cursor.fetchone()
-            start_time = tournament_info["start_time"] if tournament_info else None
-            now = datetime.now(timezone.utc)
-
-            if start_time and now < start_time:
-                continue  # skip tournaments that haven't started yet
-
-            # Get the winning player for this tier
-            cursor.execute("""
-                SELECT winning_player_id
-                FROM results
-                WHERE tournament_id=%s AND tier_number=%s
-            """, (tournament_id, tier_number))
+        for pick_row in all_picks:
+            username = pick_row["username"]
+            game_id = pick_row["game_id"]
+            pick = pick_row["pick"]
+            
+            cursor.execute("SELECT winner, week FROM games WHERE game_id=%s", (game_id,))
             result = cursor.fetchone()
+            if result:
+                winner = result["winner"]
+                week = result["week"]
+                if winner and pick == winner:
+                    user_points[username] += ROUND_WEIGHTS.get(week, 1)
 
-            if result and result["winning_player_id"] == player_id:
-                user_points[username] += TIER_WEIGHTS.get(tier_number, 1)
-
-
-        # 6️⃣ Build DataFrame with full names
+        # 5️⃣ Build DataFrame with full names
         import pandas as pd
+
         df = pd.DataFrame({
-            "Name": [name_map.get(u, u) for u in usernames],
+            "User": [name_map.get(u, u) for u in usernames],
             "Points": [user_points[u] for u in usernames]
         })
 
-        # 7️⃣ Sort descending
+        # 6️⃣ Sort by points descending
         df = df.sort_values("Points", ascending=False).reset_index(drop=True)
 
-        column_config = {
-            # "Name": st.column_config.TextColumn("Name", width='large'),
-            "Points": st.column_config.NumberColumn("Points", width='content')
-        }
-
+        # 7️⃣ Display in Streamlit
         st.dataframe(
             df,
             width="stretch",
-            hide_index=True,
-            column_config=column_config
+            hide_index=True
         )
 
 
