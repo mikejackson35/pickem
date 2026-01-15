@@ -24,19 +24,36 @@ st.set_page_config(
 
 st.markdown("""
     <style>
+    /* Hide dataframe toolbar */
     [data-testid="stElementToolbar"] {
         display: none;
     }
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
+    
+    /* Hide main menu (hamburger on desktop) */
+    #MainMenu {
+        visibility: hidden;
+    }
+    
+    /* Hide footer */
+    footer {
+        visibility: hidden;
+    }
+    
+    /* Hide deploy/share buttons */
     [data-testid="stToolbar"] {
-        display: none;
+        visibility: hidden;
     }
+    
     .stDeployButton {
-        display: none;
+        visibility: hidden;
     }
-    [data-testid="stStatusWidget"] {
-        display: none;
+    
+    /* On mobile, keep the sidebar toggle visible */
+    @media (max-width: 768px) {
+        [data-testid="collapsedControl"] {
+            visibility: visible !important;
+            display: block !important;
+        }
     }
     </style>
     """, unsafe_allow_html=True)
