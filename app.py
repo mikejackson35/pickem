@@ -29,31 +29,24 @@ st.markdown("""
         display: none;
     }
     
-    /* Hide main menu (hamburger on desktop) */
-    #MainMenu {
-        visibility: hidden;
-    }
-    
     /* Hide footer */
     footer {
         visibility: hidden;
     }
     
-    /* Hide deploy/share buttons */
-    [data-testid="stToolbar"] {
-        visibility: hidden;
+    /* Hide the three-dot menu button specifically */
+    button[kind="header"] {
+        display: none;
     }
     
+    /* Hide deploy button */
     .stDeployButton {
-        visibility: hidden;
+        display: none;
     }
     
-    /* On mobile, keep the sidebar toggle visible */
-    @media (max-width: 768px) {
-        [data-testid="collapsedControl"] {
-            visibility: visible !important;
-            display: block !important;
-        }
+    /* Hide app menu but keep header visible for sidebar toggle */
+    [data-testid="stAppViewBlockContainer"] header [data-testid="stHeaderActionElements"] > div:last-child {
+        display: none;
     }
     </style>
     """, unsafe_allow_html=True)
