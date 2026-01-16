@@ -486,19 +486,33 @@ if auth_status:
                 import pandas as pd
                 df = pd.DataFrame(table)
                 
+                from datetime import timezone
+                now = datetime.now(timezone.utc)
+                
                 column_config = {
                     "User": st.column_config.TextColumn("User", width="content")
                 }
                 
-                # Configure each game column to show images
+                # Configure each game column based on lock status
                 for g in week_games:
-                    column_config[g["game_id"]] = st.column_config.ImageColumn(
-                        g["game_id"],
-                        width=70  # Use fixed pixel width for sharper logos
-                    )
+                    kickoff = get_game_kickoff(g["game_id"])
+                    locked = now >= kickoff if kickoff else False
+                    
+                    if locked:
+                        # Game started - show images
+                        column_config[g["game_id"]] = st.column_config.ImageColumn(
+                            g["game_id"],
+                            width=70
+                        )
+                    else:
+                        # Game not started - show text (lock emoji)
+                        column_config[g["game_id"]] = st.column_config.TextColumn(
+                            g["game_id"],
+                            width="small"
+                        )
                 
                 st.dataframe(
-                    df.rename(columns = {'User':'Player'}),
+                    df.rename(columns={'User':'Player'}),
                     width="stretch",
                     hide_index=True,
                     row_height=50,
