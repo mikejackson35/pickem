@@ -475,7 +475,7 @@ if auth_status:
                         if locked:
                             pick = pick_map[username][g["game_id"]]
                             # Request 200px, but Patriots/Jaguars will auto-use 500px
-                            row_data[g["game_id"]] = nfl_logo_url(pick, 200) if pick else "—"
+                            row_data[g["game_id"]] = nfl_logo_url(pick, 200) if pick else "🔒"#"—"
                         else:
                             row_data[g["game_id"]] = "🔒"
 
