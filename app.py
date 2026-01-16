@@ -472,12 +472,13 @@ if auth_status:
                         kickoff = get_game_kickoff(g["game_id"])
                         locked = now >= kickoff if kickoff else False
 
-                        if locked:
-                            pick = pick_map[username][g["game_id"]]
-                            # Request 200px, but Patriots/Jaguars will auto-use 500px
-                            row_data[g["game_id"]] = nfl_logo_url(pick, 200) if pick else "🔒"#"—"
-                        else:
+                        if not locked:
+                            # Game hasn't started - always show lock
                             row_data[g["game_id"]] = "🔒"
+                        else:
+                            # Game has started - show logo or dash
+                            pick = pick_map[username][g["game_id"]]
+                            row_data[g["game_id"]] = nfl_logo_url(pick, 200) if pick else "—"
 
                     table.append(row_data)
 
