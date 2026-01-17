@@ -460,7 +460,7 @@ if auth_status:
 
                 # 4️⃣ Build display table with lock logic
                 from datetime import timezone
-                now = datetime.now(timezone.utc)
+                now = datetime.now(timezone.pstd)
                 table = []
                 for user in users:
                     username = user["username"]
